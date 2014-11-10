@@ -1,0 +1,30 @@
+<div class="container">
+  <div class="well">
+    <h4>Learn: Elasticsearch Persistence</h4>
+  </div>
+  <div class="login-form">
+    <div class="flashes">
+      <% flash.each do |name, msg| %>
+        <%= content_tag :div, msg, :class=>"flash flash_#{name}" %>
+      <% end %>
+      <br />
+    </div>
+    <%= form_tag sessions_path, class: "user_new" do %>
+      <fieldset>
+        <input id="username" name="username" type="text" placeholder="Username" class="form-control">
+        <input id="password" name="password" type="password" placeholder="Password" class="form-control">
+        <br />
+        <button class="btn btn-primary" type="submit">
+          Login
+        </button>
+<!-- 
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <%#= link_to "Forgot your password?", new_password_reset_path %>
+ -->
+      </fieldset>
+    <% end %>
+  </div>
+  <div class="login-footer row">
+    <small><%= "#{Time.now.utc.strftime("%A, %b %-d, %Y %H:%M:%S %Z")}" %>
+  </div>
+</div>

@@ -1,0 +1,139 @@
+<div class="container" style="padding-top:50px;">
+  <div class="jumbotron" style="margin-top:50px;">
+    <h2>Welcome, <%= current_user.username %></h2>
+    <p>
+      This is a demo app to simplify learning elasticsearch persistence.
+    </p>
+    <p>
+      The example music app provided with the gem had some issues that interfered with learning,
+      so I decided to create a simple app just to get started learning
+      <em>The ActiveRecord Pattern</em> provided by the Elasticsearch::Persistence::Model.
+      <br />
+      Why?
+      <br />
+      Just to see what it's like to have an Ruby on Rails app without a SQL database ... so far so good.
+    </p>
+    <p>
+      This app provides the very basic features for login, logout, and user management in a Ruby on Rails app ... think authentication/authorization.
+    </p>
+    <p>
+      Also, there's some Bootstrap thrown in for the <em>all too familiar</em> UI/UX.
+    </p>
+    <p>
+      This helped me to learn and solve some issues. &nbsp;I hope it helps you too.
+    </p>
+    <p>
+      <a target="_blank" class="btn btn-primary btn-lg" href="https://github.com/elasticsearch/elasticsearch-rails" role="button">
+        Learn more about the gem on github
+      </a>
+    </p>
+
+    <p>
+      <a target="_blank" class="btn btn-success btn-lg" href="https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-persistence#the-activerecord-pattern" role="button">
+        Learn more about the <em>The ActiveRecord Pattern</em> provided by the Elasticsearch::Persistence::Model
+      </a>
+    </p>
+    <hr />
+    <p>
+      It's fair to say that the Elasticsearch::Persistence::Model is not a drop in replacement for ActiveRecord::Base, and maybe
+      it's not supposed to be or maybe it's still under development (it's hard to tell based on the github issues).
+      <br />
+      Issues and solutions:
+      <ol>
+        <li>
+          <div class="well">
+            This is the most critical issue, as neither
+            <pre>if @user.update(user_params, refresh: true)</pre>
+            nor:
+            <pre>if @user.update_attributes(user_params, refresh: true)</pre>
+            <br />
+          </div>
+          trigger any validations, but save always does
+          <br />
+          <b>solution:</b>
+          <pre>
+@user.attributes = user_params
+if @user.save(refresh: true)
+          </pre>
+        </li>
+        <br />
+        <li>
+          <div class="well">validates :email, presence: true, uniqueness: {case_sensitive: false}</div>
+          fails, well, that makes sense as the gem doesn't know how to search for it in elasticsearch
+          <br />
+          <b>solution:</b> write a custom method: validate :check_email_uniqueness ... see: app/models/user.rb
+        </li>
+        <br />
+        <li>
+          <div class="well">
+            validates :password, presence: true, length: {minimum: 6}, on: :create
+            <br />
+            validates :password, presence: true, length: {minimum: 6}, on: :update, :if => :password_digest_changed?
+            <br />
+            validates_confirmation_of :password, on: :update, :if => :password_digest_changed?
+          </div>
+          fails, my guess is that <em>on: :create</em> or <em>on: update</em> or <em>:if => :password_digest_changed?</em> are not implemented
+          <br />
+          <b>solution:</b> implement a custom validate for each of them ... bummer
+        </li>
+        <br />
+        <li>
+          <div class="well">
+            User.find_by_auth_token! ... or any <em>find_by</em>, better yet stop using find_by_?
+          </div>
+          fails, obviously
+          <br />
+          <b>solution:</b> implement a custom method in the model similar to:
+          <div class="well">
+            <pre>
+def self.find_by_auth_token!(token)
+  users = User.search(query:{match:{auth_token: token}})
+  return nil if users.blank?
+  return nil if users.count > 1
+  return users.first
+  rescue => ex
+    return nil
+end
+            </pre>
+          </div>
+        </li>
+        <br />
+
+        <li>
+          <div class="well">
+            link_to delete on index page
+          </div>
+          <pre>
+link_to 'delete', user, method: "delete", %>
+  class: "btn-xs btn-danger pull_right",
+  style: "text-decoration:none",
+  title: "delete this User",
+  data: {confirm: "Are you sure?"}
+          </pre>
+          fails, this usually works with ActiveRecord models, also failed: user_path(id: user.id)
+          <br />
+          <b>solution:</b>
+          <pre>
+link_to 'delete', {action: :destroy, id: user.id}, method: :delete,
+  class: "btn-xs btn-danger pull_right",
+  style: "text-decoration:none",
+  title: "delete this User",
+  data: {confirm: "Are you sure?"}
+          </pre>
+        </li>
+        <br />
+<!-- 
+        <li>
+          <div class="well">
+            <br />
+          </div>
+          fails
+          <br />
+          <b>solution:</b> 
+        </li>
+        <br />
+ -->
+      </ol>
+    </p>
+  </div>
+</div>
