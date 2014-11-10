@@ -116,6 +116,7 @@ bundle exec thin start
 ### exercises for the learner
 1. add the "Forgot your password?" feature, i.e. allow a user to reset their password
 2. incorporate the existing [Music](https://github.com/elasticsearch/elasticsearch-rails/tree/master/elasticsearch-persistence/examples/music "Music") example app into this app, while fixing the issues/bugs
+3. create a [Docker image](https://www.docker.com/ "Docker image") for this app ... it would be easier to install, well, assuming you already have docker installed
 
 > If you perform either exercise successfully, please consider __giving back__ by creating a public github repo with your solution.
 
