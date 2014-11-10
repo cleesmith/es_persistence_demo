@@ -119,6 +119,8 @@ bundle exec thin start
 3. create a [Docker image](https://www.docker.com/ "Docker image") for this app ... it would be easier to install, well, assuming you already have docker installed
 
 > If you perform any exercise successfully, please consider __giving back__ by creating a public github repo with your solution.
+>
+> Feel free to post your results as an issue in this repo.
 
 enjoy!
 ***
